@@ -4,14 +4,17 @@ acl_categories:
 - '@stream'
 - '@slow'
 arguments:
-- key_spec_index: 0
+- display_text: key
+  key_spec_index: 0
   name: key
   type: key
 - arguments:
-  - name: full
+  - display_text: full
+    name: full
     token: FULL
     type: pure-token
-  - name: count
+  - display_text: count
+    name: count
     optional: true
     token: COUNT
     type: integer
@@ -47,7 +50,7 @@ history:
   - Added the `idmp-duration`, `idmp-maxsize`, `pids-tracked`, `iids-tracked`, `iids-added`
     and `iids-duplicates` fields for IDMP tracking.
 - - 8.8.0
-  - Added the `nacked-count` field to consumer groups in the `FULL` output.
+  - Added the `nacked-count` field to consumer groups in `FULL` output.
 key_specs:
 - RO: true
   access: true

@@ -19,6 +19,7 @@ categories:
 - kubernetes
 - clients
 command_flags:
+- denyoom
 - pubsub
 - noscript
 - loading

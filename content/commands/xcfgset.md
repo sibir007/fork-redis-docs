@@ -4,14 +4,17 @@ acl_categories:
 - '@stream'
 - '@fast'
 arguments:
-- key_spec_index: 0
+- display_text: key
+  key_spec_index: 0
   name: key
   type: key
-- name: idmp-duration
+- display_text: idmp-duration
+  name: idmp-duration
   optional: true
   token: IDMP-DURATION
   type: integer
-- name: idmp-maxsize
+- display_text: idmp-maxsize
+  name: idmp-maxsize
   optional: true
   token: IDMP-MAXSIZE
   type: integer

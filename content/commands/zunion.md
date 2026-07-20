@@ -4,35 +4,44 @@ acl_categories:
 - '@sortedset'
 - '@slow'
 arguments:
-- name: numkeys
+- display_text: numkeys
+  name: numkeys
   type: integer
-- key_spec_index: 0
+- display_text: key
+  key_spec_index: 0
   multiple: true
   name: key
   type: key
-- multiple: true
+- display_text: weight
+  multiple: true
   name: weight
   optional: true
   token: WEIGHTS
   type: integer
 - arguments:
-  - name: sum
+  - display_text: sum
+    name: sum
     token: SUM
     type: pure-token
-  - name: min
+  - display_text: min
+    name: min
     token: MIN
     type: pure-token
-  - name: max
+  - display_text: max
+    name: max
     token: MAX
     type: pure-token
-  - name: count
+  - display_text: count
+    name: count
+    since: 8.8.0
     token: COUNT
     type: pure-token
   name: aggregate
   optional: true
   token: AGGREGATE
   type: oneof
-- name: withscores
+- display_text: withscores
+  name: withscores
   optional: true
   token: WITHSCORES
   type: pure-token
@@ -59,17 +68,18 @@ history:
 - - 8.8.0
   - Added `COUNT` aggregate option.
 key_specs:
-- begin_search:
-    index:
-      pos: 1
+- RO: true
+  access: true
+  begin_search:
+    spec:
+      index: 1
+    type: index
   find_keys:
-    keynum:
+    spec:
       firstkey: 1
       keynumidx: 0
-      step: 1
-  flags:
-  - RO
-  - ACCESS
+      keystep: 1
+    type: keynum
 linkTitle: ZUNION
 railroad_diagram: /images/railroad/zunion.svg
 since: 6.2.0

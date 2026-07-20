@@ -13,6 +13,7 @@ categories:
 - kubernetes
 - clients
 command_flags:
+- loading
 - stale
 complexity: O(1)
 description: Returns the ID of a node.

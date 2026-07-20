@@ -13,6 +13,7 @@ categories:
 - kubernetes
 - clients
 command_flags:
+- loading
 - stale
 complexity: O(N) where N is the total number of Cluster nodes
 description: Returns the cluster configuration for a node.

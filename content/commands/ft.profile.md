@@ -4,6 +4,7 @@ acl_categories:
 - '@search'
 arguments:
 - name: index
+  summary: Specifies the name of the index. The index must be created using `FT.CREATE`.
   type: string
 - arguments:
   - name: search
@@ -12,16 +13,21 @@ arguments:
   - name: aggregate
     token: AGGREGATE
     type: pure-token
+  - name: hybrid
+    token: HYBRID
+    type: pure-token
   name: querytype
   type: oneof
 - name: limited
   optional: true
+  summary: Restricts profiling to the initial phase of the query execution.
   token: LIMITED
   type: pure-token
 - name: queryword
   token: QUERY
   type: pure-token
 - name: query
+  summary: Specifies the query to profile and analyze performance.
   type: string
 categories:
 - docs
@@ -45,9 +51,9 @@ module: Search
 railroad_diagram: /images/railroad/ft.profile.svg
 since: 2.2.0
 stack_path: docs/interact/search-and-query
-summary: Performs a `FT.SEARCH`, `FT.HYBRID`, or `FT.AGGREGATE` command and collects performance
-  information
-syntax_fmt: FT.PROFILE index <SEARCH | HYBRID | AGGREGATE> [LIMITED] QUERY query
+summary: Performs a `FT.SEARCH`, `FT.AGGREGATE`, or `FT.HYBRID` command and collects
+  performance information
+syntax_fmt: FT.PROFILE index <SEARCH | AGGREGATE | HYBRID> [LIMITED] QUERY query
 title: FT.PROFILE
 ---
 

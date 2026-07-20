@@ -1,22 +1,27 @@
 ---
 acl_categories:
-- "@read"
-- "@array"
-- "@slow"
+- '@read'
+- '@array'
+- '@slow'
 arguments:
-- key_spec_index: 0
+- display_text: key
+  key_spec_index: 0
   name: key
   type: key
-- name: start
+- display_text: start
+  name: start
   type: integer
-- name: end
+- display_text: end
+  name: end
   type: integer
-- name: limit
+- display_text: limit
+  name: limit
   optional: true
   token: LIMIT
   type: integer
 arity: -4
-bannerText: Array is a new data type that is currently in preview and may be subject to change.
+bannerText: Array is a new data type that is currently in preview and may be subject
+  to change.
 categories:
 - docs
 - develop
@@ -28,7 +33,7 @@ categories:
 - kubernetes
 - clients
 command_flags:
-- READONLY
+- readonly
 complexity: O(P) where P is visited positions in touched slices (dense scanned slots
   + sparse entries), with worst-case O(|end-start|+1) and typical case close to O(N),
   where N is the number of existing elements in range.
@@ -37,18 +42,20 @@ function: arscanCommand
 group: array
 hidden: false
 key_specs:
-- begin_search:
-    index:
-      pos: 1
+- RO: true
+  access: true
+  begin_search:
+    spec:
+      index: 1
+    type: index
   find_keys:
-    range:
+    spec:
+      keystep: 1
       lastkey: 0
       limit: 0
-      step: 1
-  flags:
-  - RO
-  - ACCESS
+    type: range
 linkTitle: ARSCAN
+railroad_diagram: /images/railroad/arscan.svg
 reply_schema:
   description: 'Flat array of index-value pairs: [idx1, val1, idx2, val2, ...]'
   items:

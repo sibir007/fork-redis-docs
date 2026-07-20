@@ -223,18 +223,19 @@ syntax: "FT.CREATE index \n  [ON HASH | JSON] \n  [PREFIX count prefix [prefix .
   \ \n  [SCORE default_score] \n  [SCORE_FIELD score_attribute] \n  [PAYLOAD_FIELD\
   \ payload_attribute] \n  [MAXTEXTFIELDS] \n  [TEMPORARY seconds] \n  [NOOFFSETS]\
   \ \n  [NOHL] \n  [NOFIELDS] \n  [NOFREQS] \n  [STOPWORDS count [stopword ...]] \n\
-  \  [SKIPINITIALSCAN]\n  [INDEXALL <ENABLE | DISABLE>]\n  SCHEMA field_name [AS alias] TEXT | TAG | NUMERIC | GEO\
-  \ | VECTOR | GEOSHAPE [ SORTABLE [UNF]] \n  [NOINDEX] [ field_name [AS alias] TEXT\
-  \ | TAG | NUMERIC | GEO | VECTOR | GEOSHAPE [ SORTABLE [UNF]] [NOINDEX] ...]\n"
-syntax_fmt: "FT.CREATE index [ON\_<HASH | JSON>] [PREFIX\_count prefix [prefix\n \
-  \ ...]] [FILTER\_filter] [LANGUAGE\_default_lang]\n  [LANGUAGE_FIELD\_lang_attribute]\
-  \ [SCORE\_default_score]\n  [SCORE_FIELD\_score_attribute] [PAYLOAD_FIELD\_payload_attribute]\n\
-  \  [MAXTEXTFIELDS] [TEMPORARY\_seconds] [NOOFFSETS] [NOHL] [NOFIELDS]\n  [NOFREQS]\
-  \ [STOPWORDS\_count [stopword [stopword ...]]]\n  [SKIPINITIALSCAN] [INDEXALL <ENABLE | DISABLE>] SCHEMA field_name\
-  \ [AS\_alias] <TEXT | TAG |\n  NUMERIC | GEO | VECTOR> [WITHSUFFIXTRIE] [INDEXEMPTY]\n\
-  \  [INDEXMISSING] [SORTABLE [UNF]] [NOINDEX] [field_name [AS\_alias]\n  <TEXT |\
-  \ TAG | NUMERIC | GEO | VECTOR> [WITHSUFFIXTRIE]\n  [INDEXEMPTY] [INDEXMISSING]\
-  \ [SORTABLE [UNF]] [NOINDEX] ...]"
+  \  [SKIPINITIALSCAN]\n  [INDEXALL <ENABLE | DISABLE>]\n  SCHEMA field_name [AS alias]\
+  \ TEXT | TAG | NUMERIC | GEO | VECTOR | GEOSHAPE [ SORTABLE [UNF]] \n  [NOINDEX]\
+  \ [ field_name [AS alias] TEXT | TAG | NUMERIC | GEO | VECTOR | GEOSHAPE [ SORTABLE\
+  \ [UNF]] [NOINDEX] ...]\n"
+syntax_fmt: "FT.CREATE index [ON\_<HASH | JSON>] [INDEXALL\_<ENABLE | DISABLE>]\n\
+  \  [PREFIX\_count prefix [prefix ...]] [FILTER\_filter]\n  [LANGUAGE\_default_lang]\
+  \ [LANGUAGE_FIELD\_lang_attribute]\n  [SCORE\_default_score] [SCORE_FIELD\_score_attribute]\n\
+  \  [PAYLOAD_FIELD\_payload_attribute] [MAXTEXTFIELDS]\n  [TEMPORARY\_seconds] [NOOFFSETS]\
+  \ [NOHL] [NOFIELDS] [NOFREQS]\n  [STOPWORDS\_count [stopword [stopword ...]]] [SKIPINITIALSCAN]\n\
+  \  SCHEMA field_name [AS\_alias] <TEXT | TAG | NUMERIC | GEO |\n  GEOSHAPE | VECTOR>\
+  \ [WITHSUFFIXTRIE] [INDEXEMPTY] [INDEXMISSING]\n  [SORTABLE [UNF]] [NOINDEX] [field_name\
+  \ [AS\_alias] <TEXT | TAG |\n  NUMERIC | GEO | GEOSHAPE | VECTOR> [WITHSUFFIXTRIE]\
+  \ [INDEXEMPTY]\n  [INDEXMISSING] [SORTABLE [UNF]] [NOINDEX] ...]"
 title: FT.CREATE
 ---
 

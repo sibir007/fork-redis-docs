@@ -17,6 +17,7 @@ categories:
 - kubernetes
 - clients
 command_flags:
+- loading
 - stale
 complexity: O(N) where N is the number of bytes in the key
 description: Returns the hash slot for a key.

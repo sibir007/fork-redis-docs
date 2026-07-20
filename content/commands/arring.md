@@ -1,19 +1,23 @@
 ---
 acl_categories:
-- "@write"
-- "@array"
-- "@slow"
+- '@write'
+- '@array'
+- '@slow'
 arguments:
-- key_spec_index: 0
+- display_text: key
+  key_spec_index: 0
   name: key
   type: key
-- name: size
+- display_text: size
+  name: size
   type: integer
-- multiple: true
+- display_text: value
+  multiple: true
   name: value
   type: string
 arity: -4
-bannerText: Array is a new data type that is currently in preview and may be subject to change.
+bannerText: Array is a new data type that is currently in preview and may be subject
+  to change.
 categories:
 - docs
 - develop
@@ -25,8 +29,8 @@ categories:
 - kubernetes
 - clients
 command_flags:
-- WRITE
-- DENYOOM
+- write
+- denyoom
 complexity: O(M) normally, O(N+M) on ring resize, where N is the maximum of the old
   and new ring size and M is the number of inserted values
 description: Inserts values into a ring buffer of specified size, wrapping and truncating
@@ -35,18 +39,20 @@ function: arringCommand
 group: array
 hidden: false
 key_specs:
-- begin_search:
-    index:
-      pos: 1
+- RW: true
+  begin_search:
+    spec:
+      index: 1
+    type: index
   find_keys:
-    range:
+    spec:
+      keystep: 1
       lastkey: 0
       limit: 0
-      step: 1
-  flags:
-  - RW
-  - UPDATE
+    type: range
+  update: true
 linkTitle: ARRING
+railroad_diagram: /images/railroad/arring.svg
 reply_schema:
   description: The last index where a value was inserted.
   type: integer

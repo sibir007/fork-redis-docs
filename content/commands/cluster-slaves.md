@@ -20,6 +20,7 @@ categories:
 - clients
 command_flags:
 - admin
+- loading
 - stale
 complexity: O(N) where N is the number of replicas.
 deprecated_since: 5.0.0

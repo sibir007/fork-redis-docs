@@ -20,6 +20,7 @@ categories:
 - clients
 command_flags:
 - admin
+- loading
 - stale
 complexity: O(N) where N is the number of replicas.
 description: Lists the replica nodes of a master node.

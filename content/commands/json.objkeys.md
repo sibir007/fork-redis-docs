@@ -22,7 +22,8 @@ categories:
 complexity: O(N) when path is evaluated to a single value, where N is the number of
   keys in the object, O(N) when path is evaluated to multiple values, where N is the
   size of the key
-description: Returns the key names of JSON objects at the paths matching a given path expression
+description: Returns the key names of JSON objects at the paths matching a given path
+  expression
 group: json
 hidden: false
 linkTitle: JSON.OBJKEYS
@@ -30,7 +31,7 @@ module: JSON
 railroad_diagram: /images/railroad/json.objkeys.svg
 since: 1.0.0
 stack_path: docs/data-types/json
-summary: Returns the key names of JSON objects at the paths matching a given path expression
+summary: Returns the JSON keys of the object at path
 syntax_fmt: JSON.OBJKEYS key [path]
 title: JSON.OBJKEYS
 ---
