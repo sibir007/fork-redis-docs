@@ -4,14 +4,18 @@ acl_categories:
 - '@stream'
 - '@fast'
 arguments:
-- key_spec_index: 0
+- display_text: key
+  key_spec_index: 0
   name: key
   type: key
-- name: pid
+- display_text: pid
+  name: pid
   type: string
-- name: iid
+- display_text: iid
+  name: iid
   type: string
-- name: stream-id
+- display_text: stream-id
+  name: stream-id
   type: string
 arity: 5
 categories:
@@ -33,22 +37,23 @@ description: An internal command for setting IDMP metadata on an existing stream
 group: stream
 hidden: false
 key_specs:
-- begin_search:
-    index:
-      pos: 1
+- RW: true
+  begin_search:
+    spec:
+      index: 1
+    type: index
   find_keys:
-    range:
+    spec:
+      keystep: 1
       lastkey: 0
       limit: 0
-      step: 1
-  flags:
-  - RW
-  - UPDATE
+    type: range
+  update: true
 linkTitle: XIDMPRECORD
 railroad_diagram: /images/railroad/xidmprecord.svg
 reply_schema:
   const: OK
-since: 8.8.0
+since: 8.6.2
 summary: An internal command for setting IDMP metadata on an existing stream message.
 syntax_fmt: XIDMPRECORD key pid iid stream-id
 title: XIDMPRECORD

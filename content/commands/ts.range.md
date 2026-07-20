@@ -83,7 +83,7 @@ syntax: "TS.RANGE key fromTimestamp toTimestamp\n  [LATEST]\n  [FILTER_BY_TS ts.
   \ bucketDuration [BUCKETTIMESTAMP bt] [EMPTY]]\n"
 syntax_fmt: "TS.RANGE key fromTimestamp toTimestamp [LATEST]\n  [FILTER_BY_TS\_Timestamp\
   \ [Timestamp ...]] [FILTER_BY_VALUE min max]\n  [COUNT\_count] [[ALIGN\_value] AGGREGATION\_\
-  aggregators bucketDuration [BUCKETTIMESTAMP] [EMPTY]]"
+  aggregators\n  bucketDuration [BUCKETTIMESTAMP] [EMPTY]]"
 title: TS.RANGE
 ---
 

@@ -53,7 +53,7 @@ arguments:
     optional: true
     token: ALIGN
     type: integer
-  - name: aggregationType
+  - name: aggregators
     token: AGGREGATION
     type: string
   - name: bucketDuration
@@ -128,10 +128,10 @@ syntax: "TS.MRANGE fromTimestamp toTimestamp\n  [LATEST]\n  [FILTER_BY_TS ts...]
   \ bt] [EMPTY]]\n  FILTER filterExpr...\n  [GROUPBY label REDUCE reducer]\n"
 syntax_fmt: "TS.MRANGE fromTimestamp toTimestamp [LATEST] [FILTER_BY_TS\_Timestamp\n\
   \  [Timestamp ...]] [FILTER_BY_VALUE min max] [WITHLABELS |\n  SELECTED_LABELS label1\
-  \ [label1 ...]] [COUNT\_count] [[ALIGN\_value]\n  AGGREGATION\ aggregators bucketDuration\
-  \ [BUCKETTIMESTAMP]\n  [EMPTY]] FILTER\_<l=v | l!=v | l= | l!= | l=(v1,v2,...) |\n\
-  \  l!=(v1,v2,...) [l=v | l!=v | l= | l!= | l=(v1,v2,...) |\n  l!=(v1,v2,...) ...]>\
-  \ [GROUPBY label REDUCE reducer]"
+  \ [label1 ...]] [COUNT\_count] [[ALIGN\_value]\n  AGGREGATION\_aggregators bucketDuration\
+  \ [BUCKETTIMESTAMP] [EMPTY]]\n  FILTER\_<l=v | l!=v | l= | l!= | l=(v1,v2,...) |\
+  \ l!=(v1,v2,...)\n  [l=v | l!=v | l= | l!= | l=(v1,v2,...) | l!=(v1,v2,...) ...]>\n\
+  \  [GROUPBY label REDUCE reducer]"
 title: TS.MRANGE
 ---
 {{< note >}}

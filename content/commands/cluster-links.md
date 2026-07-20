@@ -13,6 +13,7 @@ categories:
 - kubernetes
 - clients
 command_flags:
+- loading
 - stale
 complexity: O(N) where N is the total number of Cluster nodes
 description: Returns a list of all TCP links to and from peer nodes.

@@ -50,7 +50,7 @@ key_specs:
   update: true
 linkTitle: GETSET
 railroad_diagram: /images/railroad/getset.svg
-replaced_by: '`SET` with the `GET` argument'
+replaced_by: '`SET` with the `!GET` argument'
 since: 1.0.0
 summary: Returns the previous string value of a key after setting it to a new value.
 syntax_fmt: GETSET key value

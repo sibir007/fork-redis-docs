@@ -1,59 +1,82 @@
 ---
 acl_categories:
-- '@fast'
-- '@string'
 - '@write'
+- '@string'
+- '@fast'
 arguments:
-- key_spec_index: 0
+- display_text: key
+  key_spec_index: 0
   name: key
   type: key
 - arguments:
-  - name: float
+  - display_text: float
+    name: float
     token: BYFLOAT
     type: double
-  - name: integer
+  - display_text: integer
+    name: integer
     token: BYINT
     type: integer
   name: increment
   optional: true
   type: oneof
-- name: saturate
+- arguments:
+  - display_text: fail
+    name: fail
+    token: FAIL
+    type: pure-token
+  - display_text: sat
+    name: sat
+    token: SAT
+    type: pure-token
+  - display_text: reject
+    name: reject
+    token: REJECT
+    type: pure-token
+  name: overflow-block
   optional: true
-  summary: Saturate the result to LBOUND/UBOUND (or the type limits when no explicit
-    bound is given) when out of bounds. Without this option, out-of-bounds operations
-    are rejected and reply [current_value, 0].
-  token: SATURATE
-  type: pure-token
-- name: lowerbound
+  summary: Out-of-bounds policy; defaults to FAIL. Missing LBOUND/UBOUND default to
+    the type limits (LLONG_MIN/LLONG_MAX for BYINT, -LDBL_MAX/LDBL_MAX for BYFLOAT).
+  token: OVERFLOW
+  type: oneof
+- display_text: lowerbound
+  name: lowerbound
   optional: true
   summary: Integer when used with BYINT, floating-point when used with BYFLOAT.
   token: LBOUND
   type: string
-- name: upperbound
+- display_text: upperbound
+  name: upperbound
   optional: true
   summary: Integer when used with BYINT, floating-point when used with BYFLOAT.
   token: UBOUND
   type: string
 - arguments:
-  - name: seconds
+  - display_text: seconds
+    name: seconds
     token: EX
     type: integer
-  - name: milliseconds
+  - display_text: milliseconds
+    name: milliseconds
     token: PX
     type: integer
-  - name: unix-time-seconds
+  - display_text: unix-time-seconds
+    name: unix-time-seconds
     token: EXAT
     type: unix-time
-  - name: unix-time-milliseconds
+  - display_text: unix-time-milliseconds
+    name: unix-time-milliseconds
     token: PXAT
     type: unix-time
-  - name: persist
+  - display_text: persist
+    name: persist
     token: PERSIST
     type: pure-token
   name: expiration
   optional: true
   type: oneof
-- name: enx
+- display_text: enx
+  name: enx
   optional: true
   summary: Only set the expiration if the key currently has no TTL. Requires one of
     EX/PX/EXAT/PXAT; cannot be combined with PERSIST.
@@ -80,18 +103,19 @@ description: Increments the numeric value of a key by a number and sets its expi
 group: string
 hidden: false
 key_specs:
-- begin_search:
-    index:
-      pos: 1
+- RW: true
+  access: true
+  begin_search:
+    spec:
+      index: 1
+    type: index
   find_keys:
-    range:
+    spec:
+      keystep: 1
       lastkey: 0
       limit: 0
-      step: 1
-  flags:
-  - rw
-  - access
-  - update
+    type: range
+  update: true
 linkTitle: INCREX
 railroad_diagram: /images/railroad/increx.svg
 reply_schema:
@@ -106,9 +130,9 @@ reply_schema:
 since: 8.8.0
 summary: Increments the numeric value of a key by a number and sets its expiration
   time. Uses 0 as initial value if the key doesn't exist.
-syntax_fmt: "INCREX key [BYFLOAT\_increment | BYINT\_increment]\n\
-  \ [LBOUND\_lowerbound] [UBOUND\_upperbound] [SATURATE]\n\
-  \ [EX\_seconds | PX\_milliseconds | EXAT\_unix-time-seconds| PXAT\_unix-time-milliseconds | PERSIST] [ENX]"
+syntax_fmt: "INCREX key [BYFLOAT\_float | BYINT\_integer] [OVERFLOW\_<FAIL | SAT |\n\
+  \  REJECT>] [LBOUND\_lowerbound] [UBOUND\_upperbound] [EX\_seconds |\n  PX\_milliseconds\
+  \ | EXAT\_unix-time-seconds |\n  PXAT\_unix-time-milliseconds | PERSIST] [ENX]"
 title: INCREX
 ---
 Increments or decrements the numeric value stored at `key` by the specified amount, with optional upper/lower bounds and expiration control, in a single atomic operation.

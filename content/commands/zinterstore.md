@@ -4,31 +4,40 @@ acl_categories:
 - '@sortedset'
 - '@slow'
 arguments:
-- key_spec_index: 0
+- display_text: destination
+  key_spec_index: 0
   name: destination
   type: key
-- name: numkeys
+- display_text: numkeys
+  name: numkeys
   type: integer
-- key_spec_index: 1
+- display_text: key
+  key_spec_index: 1
   multiple: true
   name: key
   type: key
-- multiple: true
+- display_text: weight
+  multiple: true
   name: weight
   optional: true
   token: WEIGHTS
   type: integer
 - arguments:
-  - name: sum
+  - display_text: sum
+    name: sum
     token: SUM
     type: pure-token
-  - name: min
+  - display_text: min
+    name: min
     token: MIN
     type: pure-token
-  - name: max
+  - display_text: max
+    name: max
     token: MAX
     type: pure-token
-  - name: count
+  - display_text: count
+    name: count
+    since: 8.8.0
     token: COUNT
     type: pure-token
   name: aggregate
@@ -60,28 +69,30 @@ history:
 - - 8.8.0
   - Added `COUNT` aggregate option.
 key_specs:
-- begin_search:
-    index:
-      pos: 1
+- OW: true
+  begin_search:
+    spec:
+      index: 1
+    type: index
   find_keys:
-    range:
+    spec:
+      keystep: 1
       lastkey: 0
       limit: 0
-      step: 1
-  flags:
-  - OW
-  - UPDATE
-- begin_search:
-    index:
-      pos: 2
+    type: range
+  update: true
+- RO: true
+  access: true
+  begin_search:
+    spec:
+      index: 2
+    type: index
   find_keys:
-    keynum:
+    spec:
       firstkey: 1
       keynumidx: 0
-      step: 1
-  flags:
-  - RO
-  - ACCESS
+      keystep: 1
+    type: keynum
 linkTitle: ZINTERSTORE
 railroad_diagram: /images/railroad/zinterstore.svg
 since: 2.0.0

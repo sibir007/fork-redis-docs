@@ -21,7 +21,8 @@ categories:
 - clients
 complexity: O(1) when path is evaluated to a single value, O(N) when path is evaluated
   to multiple values, where N is the size of the key
-description: Returns the length of JSON strings at the paths matching a given path expression
+description: Returns the length of JSON strings at the paths matching a given path
+  expression
 group: json
 hidden: false
 linkTitle: JSON.STRLEN
@@ -29,7 +30,7 @@ module: JSON
 railroad_diagram: /images/railroad/json.strlen.svg
 since: 1.0.0
 stack_path: docs/data-types/json
-summary: Returns the length of JSON strings at the paths matching a given path expression
+summary: Returns the length of the JSON String at path in key
 syntax_fmt: JSON.STRLEN key [path]
 title: JSON.STRLEN
 ---

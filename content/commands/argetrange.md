@@ -1,18 +1,22 @@
 ---
 acl_categories:
-- "@read"
-- "@array"
-- "@slow"
+- '@read'
+- '@array'
+- '@slow'
 arguments:
-- key_spec_index: 0
+- display_text: key
+  key_spec_index: 0
   name: key
   type: key
-- name: start
+- display_text: start
+  name: start
   type: integer
-- name: end
+- display_text: end
+  name: end
   type: integer
 arity: 4
-bannerText: Array is a new data type that is currently in preview and may be subject to change.
+bannerText: Array is a new data type that is currently in preview and may be subject
+  to change.
 categories:
 - docs
 - develop
@@ -24,25 +28,27 @@ categories:
 - kubernetes
 - clients
 command_flags:
-- READONLY
+- readonly
 complexity: O(N) where N is the range length
 description: Gets values in a range of indices.
 function: argetrangeCommand
 group: array
 hidden: false
 key_specs:
-- begin_search:
-    index:
-      pos: 1
+- RO: true
+  access: true
+  begin_search:
+    spec:
+      index: 1
+    type: index
   find_keys:
-    range:
+    spec:
+      keystep: 1
       lastkey: 0
       limit: 0
-      step: 1
-  flags:
-  - RO
-  - ACCESS
+    type: range
 linkTitle: ARGETRANGE
+railroad_diagram: /images/railroad/argetrange.svg
 reply_schema:
   items:
     oneOf:

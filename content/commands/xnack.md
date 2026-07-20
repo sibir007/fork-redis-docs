@@ -1,38 +1,49 @@
 ---
 acl_categories:
+- '@write'
 - '@stream'
+- '@fast'
 arguments:
-- key_spec_index: 0
+- display_text: key
+  key_spec_index: 0
   name: key
   type: key
-- name: group
+- display_text: group
+  name: group
   type: string
 - arguments:
-  - name: silent
+  - display_text: silent
+    name: silent
     token: SILENT
     type: pure-token
-  - name: fail
+  - display_text: fail
+    name: fail
     token: FAIL
     type: pure-token
-  - name: fatal
+  - display_text: fatal
+    name: fatal
     token: FATAL
     type: pure-token
   name: mode
   type: oneof
 - arguments:
-  - name: numids
+  - display_text: numids
+    name: numids
     type: integer
-  - multiple: true
+  - display_text: id
+    multiple: true
     name: id
     type: string
   name: ids
   token: IDS
   type: block
-- name: count
+- display_text: count
+  name: count
   optional: true
   token: RETRYCOUNT
   type: integer
-- name: force
+- display_text: force
+  name: force
   optional: true
   token: FORCE
   type: pure-token
@@ -56,20 +67,22 @@ description: Releases pending messages back to the group's PEL without acknowled
 group: stream
 hidden: false
 key_specs:
-- begin_search:
-    index:
-      pos: 1
+- RW: true
+  begin_search:
+    spec:
+      index: 1
+    type: index
   find_keys:
-    range:
+    spec:
+      keystep: 1
       lastkey: 0
       limit: 0
-      step: 1
-  flags:
-  - RW
-  - UPDATE
+    type: range
+  update: true
 linkTitle: XNACK
+railroad_diagram: /images/railroad/xnack.svg
 since: 8.8.0
-summary: Releases pending messages back to the group's PEL without acknowledging them,
+summary: Releases claimed messages back to the group's PEL without acknowledging them,
   making them available for re-delivery.
 syntax_fmt: "XNACK key group <SILENT | FAIL | FATAL> IDS\_numids id [id ...]\n  [RETRYCOUNT\_\
   count] [FORCE]"

@@ -1,46 +1,57 @@
 ---
 acl_categories:
-- "@read"
-- "@array"
-- "@slow"
+- '@read'
+- '@array'
+- '@slow'
 arguments:
-- key_spec_index: 0
+- display_text: key
+  key_spec_index: 0
   name: key
   type: key
-- name: start
+- display_text: start
+  name: start
   type: string
-- name: end
+- display_text: end
+  name: end
   type: string
 - arguments:
   - arguments:
-    - name: exact
+    - display_text: exact
+      name: exact
       token: EXACT
       type: pure-token
-    - name: string
+    - display_text: string
+      name: string
       type: string
     name: exact
     type: block
   - arguments:
-    - name: match
+    - display_text: match
+      name: match
       token: MATCH
       type: pure-token
-    - name: string
+    - display_text: string
+      name: string
       type: string
     name: match
     type: block
   - arguments:
-    - name: glob
+    - display_text: glob
+      name: glob
       token: GLOB
       type: pure-token
-    - name: pattern
+    - display_text: pattern
+      name: pattern
       type: string
     name: glob
     type: block
   - arguments:
-    - name: re
+    - display_text: re
+      name: re
       token: RE
       type: pure-token
-    - name: pattern
+    - display_text: pattern
+      name: pattern
       type: string
     name: re
     type: block
@@ -48,19 +59,24 @@ arguments:
   name: predicate
   type: oneof
 - arguments:
-  - name: and
+  - display_text: and
+    name: and
     token: AND
     type: pure-token
-  - name: or
+  - display_text: or
+    name: or
     token: OR
     type: pure-token
-  - name: limit
+  - display_text: limit
+    name: limit
     token: LIMIT
     type: integer
-  - name: withvalues
+  - display_text: withvalues
+    name: withvalues
     token: WITHVALUES
     type: pure-token
-  - name: nocase
+  - display_text: nocase
+    name: nocase
     token: NOCASE
     type: pure-token
   multiple: true
@@ -68,7 +84,8 @@ arguments:
   optional: true
   type: oneof
 arity: -6
-bannerText: Array is a new data type that is currently in preview and may be subject to change.
+bannerText: Array is a new data type that is currently in preview and may be subject
+  to change.
 categories:
 - docs
 - develop
@@ -87,18 +104,20 @@ description: Searches array elements in a range using textual predicates.
 group: array
 hidden: false
 key_specs:
-- begin_search:
-    index:
-      pos: 1
+- RO: true
+  access: true
+  begin_search:
+    spec:
+      index: 1
+    type: index
   find_keys:
-    range:
+    spec:
+      keystep: 1
       lastkey: 0
       limit: 0
-      step: 1
-  flags:
-  - ro
-  - access
+    type: range
 linkTitle: ARGREP
+railroad_diagram: /images/railroad/argrep.svg
 reply_schema:
   description: Array of matching indexes, or flat index-value pairs when WITHVALUES
     is used.
@@ -111,9 +130,10 @@ reply_schema:
   type: array
 since: 8.8.0
 summary: Searches array elements in a range using textual predicates.
-syntax_fmt: "ARGREP key start end\n \
-  \ <EXACT string | MATCH string | GLOB pattern | RE pattern [...]>\n \
-  \ [AND | OR | LIMIT\_limit | WITHVALUES | NOCASE [...]]"
+syntax_fmt: "ARGREP key start end <EXACT string | MATCH string | GLOB pattern |\n\
+  \  RE pattern [EXACT string | MATCH string | GLOB pattern | RE\n  pattern ...]>\
+  \ [AND | OR | LIMIT\_limit | WITHVALUES | NOCASE [AND |\n  OR | LIMIT\_limit | WITHVALUES\
+  \ | NOCASE ...]]"
 title: ARGREP
 ---
 Searches array elements in a range using textual predicates and returns the indices of the matching elements. Empty slots in the range are skipped.

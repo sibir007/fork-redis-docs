@@ -1,14 +1,16 @@
 ---
 acl_categories:
-- "@read"
-- "@array"
-- "@fast"
+- '@read'
+- '@array'
+- '@fast'
 arguments:
-- key_spec_index: 0
+- display_text: key
+  key_spec_index: 0
   name: key
   type: key
 arity: 2
-bannerText: Array is a new data type that is currently in preview and may be subject to change.
+bannerText: Array is a new data type that is currently in preview and may be subject
+  to change.
 categories:
 - docs
 - develop
@@ -20,26 +22,28 @@ categories:
 - kubernetes
 - clients
 command_flags:
-- READONLY
-- FAST
+- readonly
+- fast
 complexity: O(1)
 description: Returns the length of an array (max index + 1).
 function: arlenCommand
 group: array
 hidden: false
 key_specs:
-- begin_search:
-    index:
-      pos: 1
+- RO: true
+  access: true
+  begin_search:
+    spec:
+      index: 1
+    type: index
   find_keys:
-    range:
+    spec:
+      keystep: 1
       lastkey: 0
       limit: 0
-      step: 1
-  flags:
-  - RO
-  - ACCESS
+    type: range
 linkTitle: ARLEN
+railroad_diagram: /images/railroad/arlen.svg
 reply_schema:
   description: The length of the array (max index + 1), or 0 if key does not exist.
   type: integer

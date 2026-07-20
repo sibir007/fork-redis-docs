@@ -1,22 +1,26 @@
 ---
 acl_categories:
-- "@write"
-- "@array"
-- "@fast"
+- '@write'
+- '@array'
+- '@fast'
 arguments:
-- key_spec_index: 0
+- display_text: key
+  key_spec_index: 0
   name: key
   type: key
 - arguments:
-  - name: index
+  - display_text: index
+    name: index
     type: integer
-  - name: value
+  - display_text: value
+    name: value
     type: string
   multiple: true
   name: data
   type: block
 arity: -4
-bannerText: Array is a new data type that is currently in preview and may be subject to change.
+bannerText: Array is a new data type that is currently in preview and may be subject
+  to change.
 categories:
 - docs
 - develop
@@ -28,27 +32,29 @@ categories:
 - kubernetes
 - clients
 command_flags:
-- WRITE
-- DENYOOM
-- FAST
+- write
+- denyoom
+- fast
 complexity: O(N) where N is the number of pairs
 description: Sets multiple index-value pairs in an array.
 function: armsetCommand
 group: array
 hidden: false
 key_specs:
-- begin_search:
-    index:
-      pos: 1
+- RW: true
+  begin_search:
+    spec:
+      index: 1
+    type: index
   find_keys:
-    range:
+    spec:
+      keystep: 1
       lastkey: 0
       limit: 0
-      step: 1
-  flags:
-  - RW
-  - UPDATE
+    type: range
+  update: true
 linkTitle: ARMSET
+railroad_diagram: /images/railroad/armset.svg
 reply_schema:
   description: Number of new slots that were set (previously empty).
   type: integer

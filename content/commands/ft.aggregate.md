@@ -43,125 +43,137 @@ arguments:
     name: property
     type: string
   - arguments:
-    - name: reduce
-      token: REDUCE
-      type: pure-token
     - arguments:
-      - name: count
-        token: COUNT
-        type: pure-token
-      - name: count_distinct
-        token: COUNT_DISTINCT
-        type: pure-token
-      - name: count_distinctish
-        token: COUNT_DISTINCTISH
-        type: pure-token
-      - name: sum
-        token: SUM
-        type: pure-token
-      - name: min
-        token: MIN
-        type: pure-token
-      - name: max
-        token: MAX
-        type: pure-token
-      - name: avg
-        token: AVG
-        type: pure-token
-      - name: stddev
-        token: STDDEV
-        type: pure-token
-      - name: quantile
-        token: QUANTILE
-        type: pure-token
-      - name: tolist
-        token: TOLIST
-        type: pure-token
-      - name: first_value
-        token: FIRST_VALUE
-        type: pure-token
-      - name: random_sample
-        token: RANDOM_SAMPLE
+      - name: reduce
+        token: REDUCE
         type: pure-token
       - arguments:
-        - name: collect_token
-          token: COLLECT
+        - name: count
+          token: COUNT
+          type: pure-token
+        - name: count_distinct
+          token: COUNT_DISTINCT
+          type: pure-token
+        - name: count_distinctish
+          token: COUNT_DISTINCTISH
+          type: pure-token
+        - name: sum
+          token: SUM
+          type: pure-token
+        - name: min
+          token: MIN
+          type: pure-token
+        - name: max
+          token: MAX
+          type: pure-token
+        - name: avg
+          token: AVG
+          type: pure-token
+        - name: stddev
+          token: STDDEV
+          type: pure-token
+        - name: quantile
+          token: QUANTILE
+          type: pure-token
+        - name: tolist
+          token: TOLIST
+          type: pure-token
+        - name: first_value
+          token: FIRST_VALUE
+          type: pure-token
+        - name: random_sample
+          token: RANDOM_SAMPLE
+          type: pure-token
+        name: function
+        type: oneof
+      - name: nargs
+        type: integer
+      - multiple: true
+        name: arg
+        type: string
+      - name: name
+        optional: true
+        token: AS
+        type: string
+      name: generic_reduce
+      summary: Applies a reducer function, like `SUM` or `COUNT`, on grouped results.
+      type: block
+    - arguments:
+      - name: reduce
+        token: REDUCE
+        type: pure-token
+      - name: collect_token
+        token: COLLECT
+        type: pure-token
+      - name: nargs
+        type: integer
+      - arguments:
+        - name: fields_token
+          token: FIELDS
           type: pure-token
         - arguments:
-          - name: fields_token
-            token: FIELDS
+          - name: all
+            token: '*'
             type: pure-token
           - arguments:
-            - name: all
-              token: '*'
-              type: pure-token
-            - arguments:
-              - name: num_fields
-                type: integer
-              - multiple: true
-                name: field
-                type: string
-              name: explicit
-              type: block
-            name: fields_spec
-            type: oneof
-          name: fields
-          type: block
-        - arguments:
-          - name: sortby_token
-            token: SORTBY
-            type: pure-token
-          - name: nargs
-            type: integer
-          - arguments:
-            - name: field
+            - name: num_fields
+              type: integer
+            - multiple: true
+              name: field
               type: string
-            - arguments:
-              - name: asc
-                token: ASC
-                type: pure-token
-              - name: desc
-                token: DESC
-                type: pure-token
-              name: order
-              optional: true
-              type: oneof
-            multiple: true
-            name: key
+            name: explicit
             type: block
-          name: sortby
-          optional: true
-          type: block
-        - arguments:
-          - name: limit_token
-            token: LIMIT
-            type: pure-token
-          - name: offset
-            type: integer
-          - name: count
-            type: integer
-          name: limit
-          optional: true
-          type: block
-        name: collect
-        since: 8.8.0
+          name: fields_spec
+          type: oneof
+        name: fields
         type: block
-      name: function
-      type: oneof
-    - name: nargs
-      type: integer
-    - multiple: true
-      name: arg
-      type: string
-    - name: name
-      optional: true
-      token: AS
-      type: string
+      - arguments:
+        - name: sortby_token
+          token: SORTBY
+          type: pure-token
+        - name: nargs
+          type: integer
+        - arguments:
+          - name: field
+            type: string
+          - arguments:
+            - name: asc
+              token: ASC
+              type: pure-token
+            - name: desc
+              token: DESC
+              type: pure-token
+            name: order
+            optional: true
+            type: oneof
+          multiple: true
+          name: key
+          type: block
+        name: sortby
+        optional: true
+        type: block
+      - arguments:
+        - name: limit_token
+          token: LIMIT
+          type: pure-token
+        - name: offset
+          type: integer
+        - name: count
+          type: integer
+        name: limit
+        optional: true
+        type: block
+      - name: name
+        optional: true
+        token: AS
+        type: string
+      name: collect_reduce
+      since: 8.8.0
+      type: block
     multiple: true
     name: reduce
     optional: true
-    summary: Applies a reducer function, like `SUM` or `COUNT`, on grouped results.
-    type: block
+    type: oneof
   multiple: true
   name: groupby
   optional: true
@@ -487,6 +499,41 @@ syntax: "FT.AGGREGATE index query \n  [VERBATIM] \n  [LOAD count field [field ..
   \ name ...]] \n  [LIMIT offset num] \n  [FILTER filter] \n  [WITHCURSOR [COUNT read_size]\
   \ [MAXIDLE idle_time]] \n  [PARAMS nargs name value [name value ...]] \n  [SCORER\
   \ scorer]\n  [ADDSCORES] \n  [DIALECT dialect]\n"
+syntax_fmt: "FT.AGGREGATE index query [VERBATIM] [LOAD\_count field [field ...]]\n\
+  \  [TIMEOUT\_timeout] [LOAD *] [GROUPBY\_nargs property [property ...]\n  [REDUCE\
+  \ <COUNT | COUNT_DISTINCT | COUNT_DISTINCTISH | SUM | MIN |\n  MAX | AVG | STDDEV\
+  \ | QUANTILE | TOLIST | FIRST_VALUE |\n  RANDOM_SAMPLE> nargs arg [arg ...] [AS\_\
+  name] | REDUCE COLLECT\n  nargs FIELDS <* | num_fields field [field ...]> [SORTBY\
+  \ nargs\n  field [ASC | DESC] [field [ASC | DESC] ...]] [LIMIT offset count]\n \
+  \ [AS\_name] [REDUCE <COUNT | COUNT_DISTINCT | COUNT_DISTINCTISH |\n  SUM | MIN\
+  \ | MAX | AVG | STDDEV | QUANTILE | TOLIST | FIRST_VALUE |\n  RANDOM_SAMPLE> nargs\
+  \ arg [arg ...] [AS\_name] | REDUCE COLLECT\n  nargs FIELDS <* | num_fields field\
+  \ [field ...]> [SORTBY nargs\n  field [ASC | DESC] [field [ASC | DESC] ...]] [LIMIT\
+  \ offset count]\n  [AS\_name] ...]] [GROUPBY\_nargs property [property ...] [REDUCE\n\
+  \  <COUNT | COUNT_DISTINCT | COUNT_DISTINCTISH | SUM | MIN | MAX |\n  AVG | STDDEV\
+  \ | QUANTILE | TOLIST | FIRST_VALUE | RANDOM_SAMPLE>\n  nargs arg [arg ...] [AS\_\
+  name] | REDUCE COLLECT nargs FIELDS <* |\n  num_fields field [field ...]> [SORTBY\
+  \ nargs field [ASC | DESC]\n  [field [ASC | DESC] ...]] [LIMIT offset count] [AS\_\
+  name] [REDUCE\n  <COUNT | COUNT_DISTINCT | COUNT_DISTINCTISH | SUM | MIN | MAX |\n\
+  \  AVG | STDDEV | QUANTILE | TOLIST | FIRST_VALUE | RANDOM_SAMPLE>\n  nargs arg\
+  \ [arg ...] [AS\_name] | REDUCE COLLECT nargs FIELDS <* |\n  num_fields field [field\
+  \ ...]> [SORTBY nargs field [ASC | DESC]\n  [field [ASC | DESC] ...]] [LIMIT offset\
+  \ count] [AS\_name] ...]]\n  ...]] [SORTBY\_nargs [property <ASC | DESC> [property\
+  \ <ASC | DESC>\n  ...]] [MAX\_num]] [APPLY\_exists\_exists log\_log abs\_abs ceil\_\
+  ceil\n  floor\_floor log2\_log2 exp\_exp sqrt\_sqrt upper\_upper lower\_lower\n\
+  \  startswith\_startswith contains\_contains strlen\_strlen\n  substr\_substr format\_\
+  format matched_terms\_matched_terms\n  split\_split timefmt\_timefmt parsetime\_\
+  parsetime day\_day hour\_hour\n  minute\_minute month\_month dayofweek\_dayofweek\n\
+  \  dayofmonth\_dayofmonth dayofyear\_dayofyear year\_year\n  monthofyear\_monthofyear\
+  \ geodistance\_geodistance AS\_name\n  [APPLY\_exists\_exists log\_log abs\_abs\
+  \ ceil\_ceil floor\_floor\n  log2\_log2 exp\_exp sqrt\_sqrt upper\_upper lower\_\
+  lower\n  startswith\_startswith contains\_contains strlen\_strlen\n  substr\_substr\
+  \ format\_format matched_terms\_matched_terms\n  split\_split timefmt\_timefmt parsetime\_\
+  parsetime day\_day hour\_hour\n  minute\_minute month\_month dayofweek\_dayofweek\n\
+  \  dayofmonth\_dayofmonth dayofyear\_dayofyear year\_year\n  monthofyear\_monthofyear\
+  \ geodistance\_geodistance AS\_name ...]]\n  [LIMIT offset num] [FILTER\_filter]\
+  \ [WITHCURSOR [COUNT\_read_size]\n  [MAXIDLE\_idle_time]] [PARAMS nargs name value\
+  \ [name value ...]]\n  [DIALECT\_dialect]"
 title: FT.AGGREGATE
 ---
 

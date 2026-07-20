@@ -62,7 +62,7 @@ railroad_diagram: /images/railroad/json.set.svg
 since: 1.0.0
 stack_path: docs/data-types/json
 summary: Sets or updates the JSON value at a path
-syntax_fmt: JSON.SET key path value [NX | XX] [FPHA <FP16 | BF16 | FP32 | FP64>]
+syntax_fmt: JSON.SET key path value [NX | XX] [<FP16 | BF16 | FP32 | FP64>]
 title: JSON.SET
 ---
 

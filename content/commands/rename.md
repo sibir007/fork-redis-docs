@@ -31,7 +31,8 @@ group: generic
 hidden: false
 history:
 - - 3.2.0
-  - The command no longer returns an error when source and destination names are the same.
+  - The command no longer returns an error when source and destination names are the
+    same.
 key_specs:
 - RW: true
   access: true

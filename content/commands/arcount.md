@@ -1,14 +1,16 @@
 ---
 acl_categories:
-- "@read"
-- "@array"
-- "@fast"
+- '@read'
+- '@array'
+- '@fast'
 arguments:
-- key_spec_index: 0
+- display_text: key
+  key_spec_index: 0
   name: key
   type: key
 arity: 2
-bannerText: Array is a new data type that is currently in preview and may be subject to change.
+bannerText: Array is a new data type that is currently in preview and may be subject
+  to change.
 categories:
 - docs
 - develop
@@ -25,18 +27,20 @@ description: Returns the number of non-empty elements in an array.
 group: array
 hidden: false
 key_specs:
-- begin_search:
-    index:
-      pos: 1
+- RO: true
+  access: true
+  begin_search:
+    spec:
+      index: 1
+    type: index
   find_keys:
-    range:
+    spec:
+      keystep: 1
       lastkey: 0
       limit: 0
-      step: 1
-  flags:
-  - ro
-  - access
+    type: range
 linkTitle: ARCOUNT
+railroad_diagram: /images/railroad/arcount.svg
 since: 8.8.0
 summary: Returns the number of non-empty elements in an array.
 syntax_fmt: ARCOUNT key

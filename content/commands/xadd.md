@@ -4,37 +4,42 @@ acl_categories:
 - '@stream'
 - '@fast'
 arguments:
-- key_spec_index: 0
+- display_text: key
+  key_spec_index: 0
   name: key
   type: key
-- name: nomkstream
+- display_text: nomkstream
+  name: nomkstream
   optional: true
   since: 6.2.0
   token: NOMKSTREAM
   type: pure-token
 - arguments:
-  - name: keepref
+  - display_text: keepref
+    name: keepref
     token: KEEPREF
     type: pure-token
-  - name: delref
+  - display_text: delref
+    name: delref
     token: DELREF
     type: pure-token
-  - name: acked
+  - display_text: acked
+    name: acked
     token: ACKED
     type: pure-token
   name: condition
   optional: true
   type: oneof
 - arguments:
-  - display_text: producer-id
+  - display_text: pid
     name: pid
     token: IDMPAUTO
     type: string
   - arguments:
-    - display_text: producer-id
+    - display_text: pid
       name: pid
       type: string
-    - display_text: idempotent-id
+    - display_text: iid
       name: iid
       type: string
     name: idmp
@@ -46,28 +51,34 @@ arguments:
   type: oneof
 - arguments:
   - arguments:
-    - name: maxlen
+    - display_text: maxlen
+      name: maxlen
       token: MAXLEN
       type: pure-token
-    - name: minid
+    - display_text: minid
+      name: minid
       since: 6.2.0
       token: MINID
       type: pure-token
     name: strategy
     type: oneof
   - arguments:
-    - name: equal
+    - display_text: equal
+      name: equal
       token: '='
       type: pure-token
-    - name: approximately
+    - display_text: approximately
+      name: approximately
       token: '~'
       type: pure-token
     name: operator
     optional: true
     type: oneof
-  - name: threshold
+  - display_text: threshold
+    name: threshold
     type: string
-  - name: count
+  - display_text: count
+    name: count
     optional: true
     since: 6.2.0
     token: LIMIT
@@ -76,17 +87,21 @@ arguments:
   optional: true
   type: block
 - arguments:
-  - name: auto-id
+  - display_text: auto-id
+    name: auto-id
     token: '*'
     type: pure-token
-  - name: id
+  - display_text: id
+    name: id
     type: string
   name: id-selector
   type: oneof
 - arguments:
-  - name: field
+  - display_text: field
+    name: field
     type: string
-  - name: value
+  - display_text: value
+    name: value
     type: string
   multiple: true
   name: data
@@ -121,22 +136,25 @@ history:
 - - 8.2.0
   - Added the `KEEPREF`, `DELREF` and `ACKED` options.
 key_specs:
-- begin_search:
-    index:
-      pos: 1
+- RW: true
+  begin_search:
+    spec:
+      index: 1
+    type: index
   find_keys:
-    range:
+    spec:
+      keystep: 1
       lastkey: 0
       limit: 0
     type: range
   notes: UPDATE instead of INSERT because of the optional trimming feature
+  update: true
 linkTitle: XADD
 railroad_diagram: /images/railroad/xadd.svg
 since: 5.0.0
 summary: Appends a new message to a stream. Creates the key if it doesn't exist.
-syntax_fmt: "XADD key [NOMKSTREAM] [KEEPREF | DELREF | ACKED]\n \
-  \ [IDMPAUTO producer-id | IDMP producer-id idempotent-id]\n \
-  \ [<MAXLEN | MINID> [= | ~] threshold [LIMIT\_count]] <* | id>\n \
+syntax_fmt: "XADD key [NOMKSTREAM] [KEEPREF | DELREF | ACKED] [IDMPAUTO\_pid |\n \
+  \ IDMP\_pid iid] [<MAXLEN | MINID> [= | ~] threshold [LIMIT\_count]]\n  <* | id>\
   \ field value [field value ...]"
 title: XADD
 ---

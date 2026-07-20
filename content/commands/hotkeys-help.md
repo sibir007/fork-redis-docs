@@ -1,6 +1,6 @@
 ---
 acl_categories:
-- '@admin'
+- '@slow'
 arity: 2
 categories:
 - docs
@@ -29,7 +29,7 @@ reply_schema:
     type: string
   type: array
 since: 8.6.1
-summary: Returns helpful text about HOTKEYS commands and parameters.
+summary: Return helpful text about HOTKEYS command parameters.
 syntax_fmt: HOTKEYS HELP
 title: HOTKEYS HELP
 ---

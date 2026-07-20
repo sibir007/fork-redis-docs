@@ -43,6 +43,11 @@ arguments:
         optional: true
         token: EF_RUNTIME
         type: integer
+      - name: shard_k_ratio
+        optional: true
+        since: 8.6.1
+        token: SHARD_K_RATIO
+        type: double
       - name: yield_score_as
         optional: true
         token: YIELD_SCORE_AS
@@ -71,7 +76,8 @@ arguments:
     name: vector_query_type
     optional: true
     type: oneof
-  - name: filter
+  - expression: true
+    name: filter
     optional: true
     token: FILTER
     type: string
@@ -216,61 +222,136 @@ arguments:
     name: property
     type: string
   - arguments:
-    - name: reduce
-      token: REDUCE
-      type: pure-token
     - arguments:
-      - name: count
-        token: COUNT
+      - name: reduce
+        token: REDUCE
         type: pure-token
-      - name: count_distinct
-        token: COUNT_DISTINCT
+      - arguments:
+        - name: count
+          token: COUNT
+          type: pure-token
+        - name: count_distinct
+          token: COUNT_DISTINCT
+          type: pure-token
+        - name: count_distinctish
+          token: COUNT_DISTINCTISH
+          type: pure-token
+        - name: sum
+          token: SUM
+          type: pure-token
+        - name: min
+          token: MIN
+          type: pure-token
+        - name: max
+          token: MAX
+          type: pure-token
+        - name: avg
+          token: AVG
+          type: pure-token
+        - name: stddev
+          token: STDDEV
+          type: pure-token
+        - name: quantile
+          token: QUANTILE
+          type: pure-token
+        - name: tolist
+          token: TOLIST
+          type: pure-token
+        - name: first_value
+          token: FIRST_VALUE
+          type: pure-token
+        - name: random_sample
+          token: RANDOM_SAMPLE
+          type: pure-token
+        name: function
+        type: oneof
+      - name: nargs
+        type: integer
+      - multiple: true
+        name: arg
+        type: string
+      - name: name
+        optional: true
+        token: AS
+        type: string
+      name: generic_reduce
+      type: block
+    - arguments:
+      - name: reduce
+        token: REDUCE
         type: pure-token
-      - name: count_distinctish
-        token: COUNT_DISTINCTISH
+      - name: collect_token
+        token: COLLECT
         type: pure-token
-      - name: sum
-        token: SUM
-        type: pure-token
-      - name: min
-        token: MIN
-        type: pure-token
-      - name: max
-        token: MAX
-        type: pure-token
-      - name: avg
-        token: AVG
-        type: pure-token
-      - name: stddev
-        token: STDDEV
-        type: pure-token
-      - name: quantile
-        token: QUANTILE
-        type: pure-token
-      - name: tolist
-        token: TOLIST
-        type: pure-token
-      - name: first_value
-        token: FIRST_VALUE
-        type: pure-token
-      - name: random_sample
-        token: RANDOM_SAMPLE
-        type: pure-token
-      name: function
-      type: oneof
-    - name: nargs
-      type: integer
-    - multiple: true
-      name: arg
-      type: string
-    - name: name
-      optional: true
-      token: AS
-      type: string
+      - name: nargs
+        type: integer
+      - arguments:
+        - name: fields_token
+          token: FIELDS
+          type: pure-token
+        - arguments:
+          - name: all
+            token: '*'
+            type: pure-token
+          - arguments:
+            - name: num_fields
+              type: integer
+            - multiple: true
+              name: field
+              type: string
+            name: explicit
+            type: block
+          name: fields_spec
+          type: oneof
+        name: fields
+        type: block
+      - arguments:
+        - name: sortby_token
+          token: SORTBY
+          type: pure-token
+        - name: nargs
+          type: integer
+        - arguments:
+          - name: field
+            type: string
+          - arguments:
+            - name: asc
+              token: ASC
+              type: pure-token
+            - name: desc
+              token: DESC
+              type: pure-token
+            name: order
+            optional: true
+            type: oneof
+          multiple: true
+          name: key
+          type: block
+        name: sortby
+        optional: true
+        type: block
+      - arguments:
+        - name: limit_token
+          token: LIMIT
+          type: pure-token
+        - name: offset
+          type: integer
+        - name: count
+          type: integer
+        name: limit
+        optional: true
+        type: block
+      - name: name
+        optional: true
+        token: AS
+        type: string
+      name: collect_reduce
+      since: 8.8.0
+      type: block
     multiple: true
     name: reduce
     optional: true
-    type: block
+    type: oneof
   name: groupby
   optional: true
   type: block
@@ -429,7 +510,7 @@ arguments:
     - arguments:
       - token: timestamp
       name: month
-      summary: Round a Unix timestamp to the beginning of the current month.
+      summary: Round a unix timestamp to the beginning of the current month.
       token: month
       type: function
     - arguments:
@@ -471,7 +552,7 @@ arguments:
     expression: true
     name: expression
     token: APPLY
-    type: string
+    type: block
   - name: name
     token: AS
     type: string
@@ -479,11 +560,31 @@ arguments:
   name: apply
   optional: true
   type: block
-- expression: true
+- arguments:
+  - name: count
+    type: integer
+  - expression: true
+    name: filter_expression
+    type: string
+  - arguments:
+    - name: adhoc
+      token: ADHOC
+      type: pure-token
+    - name: batches
+      token: BATCHES
+      type: pure-token
+    name: policy
+    optional: true
+    token: POLICY
+    type: oneof
+  - name: batch_size_value
+    optional: true
+    token: BATCH_SIZE
+    type: integer
   name: filter
   optional: true
   token: FILTER
-  type: string
+  type: block
 categories:
 - docs
 - develop
@@ -501,21 +602,39 @@ group: search
 hidden: false
 linkTitle: FT.HYBRID
 railroad_diagram: /images/railroad/ft.hybrid.svg
-since: 8.4.0
+since: 8.4.4
 summary: Performs hybrid search combining text search and vector similarity search
-syntax_fmt: "FT.HYBRID index\n  SEARCH query\n    [SCORER scorer]\n    [YIELD_SCORE_AS\
-  \ name]\n  VSIM vector_field $vector_param\n    [KNN count K k [EF_RUNTIME ef_runtime]] [SHARD_K_RATIO shard_k_ratio]]\n\
-  \    [RANGE count RADIUS radius [EPSILON epsilon]]\n    [YIELD_SCORE_AS name]\n\
-  \    [FILTER] count filter-expression [POLICY [ADHOC/BATCHES] BATCH_SIZE batch-size-value]\n\
-  \  [COMBINE RRF count [CONSTANT constant] [WINDOW window]\
-  \ [YIELD_SCORE_AS name]]\n  [COMBINE LINEAR count [[ALPHA alpha] [BETA beta]] [WINDOW\
-  \ window] [YIELD_SCORE_AS name]]\n  [LIMIT offset num]\n  [SORTBY count sortby\
-  \ [ASC | DESC]]\n  [NOSORT]\n  [LOAD count field [field ...]]\n  [LOAD *]\n  [GROUPBY\
-  \ nargs property [property ...]\n  [GROUPBY nargs property [property ...]\n   \
-  \ [REDUCE function nargs arg [arg ...] [AS name]\n    [REDUCE function nargs arg\
-  \ [arg ...] [AS name] ...]] ...]]\n  [APPLY expression AS name [APPLY expression\
-  \ AS name ...]]\n  [FILTER filter]\n  PARAMS nargs vector_param vector_blob [name\
-  \ value ...]\n  [TIMEOUT timeout]"
+syntax_fmt: "FT.HYBRID index SEARCH query [SCORER\_scorer]\n  [YIELD_SCORE_AS\_yield_score_as]\
+  \ VSIM field vector [KNN count K\_k\n  [EF_RUNTIME\_ef_runtime] [SHARD_K_RATIO\_\
+  shard_k_ratio]\n  [YIELD_SCORE_AS\_yield_score_as] | RANGE count RADIUS\_radius\n\
+  \  [EPSILON\_epsilon] [YIELD_SCORE_AS\_yield_score_as]] [FILTER\_filter]\n  [COMBINE\
+  \ <RRF count [CONSTANT\_constant] [WINDOW\_window]\n  [YIELD_SCORE_AS\_yield_score_as]\
+  \ | LINEAR count [ALPHA\_alpha\n  BETA\_beta] [WINDOW\_window] [YIELD_SCORE_AS\_\
+  yield_score_as]>]\n  [LIMIT offset num] [SORTBY\_sortby [ASC | DESC] | NOSORT] [PARAMS\n\
+  \  nargs name value [name value ...]] [TIMEOUT\_timeout]\n  [FORMAT\_format] [LOAD\_\
+  count field [field ...]] [LOAD *] [GROUPBY\n  nproperties property [property ...]\
+  \ [REDUCE <COUNT |\n  COUNT_DISTINCT | COUNT_DISTINCTISH | SUM | MIN | MAX | AVG\
+  \ |\n  STDDEV | QUANTILE | TOLIST | FIRST_VALUE | RANDOM_SAMPLE> nargs\n  arg [arg\
+  \ ...] [AS\_name] | REDUCE COLLECT nargs FIELDS <* |\n  num_fields field [field\
+  \ ...]> [SORTBY nargs field [ASC | DESC]\n  [field [ASC | DESC] ...]] [LIMIT offset\
+  \ count] [AS\_name] [REDUCE\n  <COUNT | COUNT_DISTINCT | COUNT_DISTINCTISH | SUM\
+  \ | MIN | MAX |\n  AVG | STDDEV | QUANTILE | TOLIST | FIRST_VALUE | RANDOM_SAMPLE>\n\
+  \  nargs arg [arg ...] [AS\_name] | REDUCE COLLECT nargs FIELDS <* |\n  num_fields\
+  \ field [field ...]> [SORTBY nargs field [ASC | DESC]\n  [field [ASC | DESC] ...]]\
+  \ [LIMIT offset count] [AS\_name] ...]]]\n  [APPLY\_exists\_exists log\_log abs\_\
+  abs ceil\_ceil floor\_floor\n  log2\_log2 exp\_exp sqrt\_sqrt upper\_upper lower\_\
+  lower\n  startswith\_startswith contains\_contains strlen\_strlen\n  substr\_substr\
+  \ format\_format matched_terms\_matched_terms\n  split\_split timefmt\_timefmt parsetime\_\
+  parsetime day\_day hour\_hour\n  minute\_minute month\_month dayofweek\_dayofweek\n\
+  \  dayofmonth\_dayofmonth dayofyear\_dayofyear year\_year\n  monthofyear\_monthofyear\
+  \ geodistance\_geodistance AS\_name\n  [APPLY\_exists\_exists log\_log abs\_abs\
+  \ ceil\_ceil floor\_floor\n  log2\_log2 exp\_exp sqrt\_sqrt upper\_upper lower\_\
+  lower\n  startswith\_startswith contains\_contains strlen\_strlen\n  substr\_substr\
+  \ format\_format matched_terms\_matched_terms\n  split\_split timefmt\_timefmt parsetime\_\
+  parsetime day\_day hour\_hour\n  minute\_minute month\_month dayofweek\_dayofweek\n\
+  \  dayofmonth\_dayofmonth dayofyear\_dayofyear year\_year\n  monthofyear\_monthofyear\
+  \ geodistance\_geodistance AS\_name ...]]\n  [FILTER\_count filter_expression [POLICY\_\
+  <ADHOC | BATCHES>]\n  [BATCH_SIZE\_batch_size_value]]"
 title: FT.HYBRID
 ---
 

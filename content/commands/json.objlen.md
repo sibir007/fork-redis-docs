@@ -21,7 +21,8 @@ categories:
 - clients
 complexity: O(1) when path is evaluated to a single value, O(N) when path is evaluated
   to multiple values, where N is the size of the key
-description: Returns the number of keys in JSON objects at the paths matching a given path expression
+description: Returns the number of keys in JSON objects at the paths matching a given
+  path expression
 group: json
 hidden: false
 linkTitle: JSON.OBJLEN
@@ -29,7 +30,7 @@ module: JSON
 railroad_diagram: /images/railroad/json.objlen.svg
 since: 1.0.0
 stack_path: docs/data-types/json
-summary: Returns the number of keys in JSON objects at the paths matching a given path expression
+summary: Returns the number of keys of the object at path
 syntax_fmt: JSON.OBJLEN key [path]
 title: JSON.OBJLEN
 ---

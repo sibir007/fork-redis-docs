@@ -20,6 +20,7 @@ categories:
 - clients
 command_flags:
 - admin
+- loading
 - stale
 complexity: O(N) where N is the number of failure reports
 description: Returns the number of active failure reports active for a node.

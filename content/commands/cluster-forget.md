@@ -28,7 +28,8 @@ group: cluster
 hidden: false
 history:
 - - 7.2.0
-  - Automatically propagate forgotten node deletion to other nodes in a cluster, allowing nodes to be deleted with a single call in most cases.
+  - Automatically propagate forgotten node deletion to other nodes in a cluster, allowing
+    nodes to be deleted with a single call in most cases.
 linkTitle: CLUSTER FORGET
 railroad_diagram: /images/railroad/cluster-forget.svg
 since: 3.0.0

@@ -1,50 +1,63 @@
 ---
 acl_categories:
-- "@read"
-- "@array"
-- "@slow"
+- '@read'
+- '@array'
+- '@slow'
 arguments:
-- key_spec_index: 0
+- display_text: key
+  key_spec_index: 0
   name: key
   type: key
-- name: start
+- display_text: start
+  name: start
   type: integer
-- name: end
+- display_text: end
+  name: end
   type: integer
 - arguments:
-  - name: sum
+  - display_text: sum
+    name: sum
     token: SUM
     type: pure-token
-  - name: min
+  - display_text: min
+    name: min
     token: MIN
     type: pure-token
-  - name: max
+  - display_text: max
+    name: max
     token: MAX
     type: pure-token
-  - name: and
+  - display_text: and
+    name: and
     token: AND
     type: pure-token
-  - name: or
+  - display_text: or
+    name: or
     token: OR
     type: pure-token
-  - name: xor
+  - display_text: xor
+    name: xor
     token: XOR
     type: pure-token
   - arguments:
-    - name: match
+    - display_text: match
+      name: match
       token: MATCH
       type: pure-token
-    - name: value
+    - display_text: value
+      name: value
       type: string
     name: match
     type: block
-  - name: used
+  - display_text: used
+    name: used
     token: USED
     type: pure-token
   name: operation
   type: oneof
 arity: -5
-bannerText: Array is a new data type that is currently in preview and may be subject to change.
+bannerText: Array is a new data type that is currently in preview and may be subject
+  to change.
 categories:
 - docs
 - develop
@@ -56,7 +69,7 @@ categories:
 - kubernetes
 - clients
 command_flags:
-- READONLY
+- readonly
 complexity: O(P) where P is visited positions in touched slices (dense scanned slots
   + sparse entries), with worst-case O(|end-start|+1) and typical case close to O(N),
   where N is the number of existing elements in range.
@@ -65,18 +78,20 @@ function: aropCommand
 group: array
 hidden: false
 key_specs:
-- begin_search:
-    index:
-      pos: 1
+- RO: true
+  access: true
+  begin_search:
+    spec:
+      index: 1
+    type: index
   find_keys:
-    range:
+    spec:
+      keystep: 1
       lastkey: 0
       limit: 0
-      step: 1
-  flags:
-  - RO
-  - ACCESS
+    type: range
 linkTitle: AROP
+railroad_diagram: /images/railroad/arop.svg
 reply_schema:
   oneOf:
   - description: Result of the operation.

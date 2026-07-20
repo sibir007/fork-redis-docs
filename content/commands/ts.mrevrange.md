@@ -8,10 +8,11 @@ arguments:
   type: string
 - name: toTimestamp
   type: string
-- name: LATEST
+- name: latest
   optional: true
   since: 1.8.0
-  type: string
+  token: LATEST
+  type: pure-token
 - multiple: true
   name: Timestamp
   optional: true
@@ -128,7 +129,7 @@ syntax: "TS.MREVRANGE fromTimestamp toTimestamp\n  [LATEST]\n  [FILTER_BY_TS ts.
   \ bt] [EMPTY]]\n  FILTER filterExpr...\n  [GROUPBY label REDUCE reducer]\n"
 syntax_fmt: "TS.MREVRANGE fromTimestamp toTimestamp [LATEST]\n  [FILTER_BY_TS\_Timestamp\
   \ [Timestamp ...]] [FILTER_BY_VALUE min max]\n  [WITHLABELS | SELECTED_LABELS label1\
-  \ [label1 ...]] [COUNT\_count]\n  [[ALIGN\_value] AGGREGATION\ aggregators bucketDuration\n\
+  \ [label1 ...]] [COUNT\_count]\n  [[ALIGN\_value] AGGREGATION\_aggregators bucketDuration\n\
   \  [BUCKETTIMESTAMP] [EMPTY]] FILTER\_<l=v | l!=v | l= | l!= |\n  l=(v1,v2,...)\
   \ | l!=(v1,v2,...) [l=v | l!=v | l= | l!= |\n  l=(v1,v2,...) | l!=(v1,v2,...) ...]>\
   \ [GROUPBY label REDUCE\n  reducer]"

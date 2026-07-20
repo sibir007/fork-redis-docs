@@ -43,7 +43,7 @@ history:
 - - 4.0.0
   - Added the `ASYNC` flushing mode modifier.
 - - 6.2.0
-  - Added the `SYNC` flushing mode modifier. The default flush behavior is now configurable using the lazyfree-lazy-user-flush configuration directive.
+  - Added the `SYNC` flushing mode modifier.
 linkTitle: FLUSHDB
 railroad_diagram: /images/railroad/flushdb.svg
 since: 1.0.0

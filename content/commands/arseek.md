@@ -1,16 +1,19 @@
 ---
 acl_categories:
-- "@write"
-- "@array"
-- "@fast"
+- '@write'
+- '@array'
+- '@fast'
 arguments:
-- key_spec_index: 0
+- display_text: key
+  key_spec_index: 0
   name: key
   type: key
-- name: index
+- display_text: index
+  name: index
   type: integer
 arity: 3
-bannerText: Array is a new data type that is currently in preview and may be subject to change.
+bannerText: Array is a new data type that is currently in preview and may be subject
+  to change.
 categories:
 - docs
 - develop
@@ -22,26 +25,28 @@ categories:
 - kubernetes
 - clients
 command_flags:
-- WRITE
-- FAST
+- write
+- fast
 complexity: O(1)
 description: Sets the ARINSERT / ARRING cursor to a specific index.
 function: arseekCommand
 group: array
 hidden: false
 key_specs:
-- begin_search:
-    index:
-      pos: 1
+- RW: true
+  begin_search:
+    spec:
+      index: 1
+    type: index
   find_keys:
-    range:
+    spec:
+      keystep: 1
       lastkey: 0
       limit: 0
-      step: 1
-  flags:
-  - RW
-  - UPDATE
+    type: range
+  update: true
 linkTitle: ARSEEK
+railroad_diagram: /images/railroad/arseek.svg
 reply_schema:
   description: 1 if the cursor was set, 0 if the key does not exist.
   type: integer

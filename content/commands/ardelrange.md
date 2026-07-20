@@ -1,22 +1,26 @@
 ---
 acl_categories:
-- "@write"
-- "@array"
-- "@slow"
+- '@write'
+- '@array'
+- '@slow'
 arguments:
-- key_spec_index: 0
+- display_text: key
+  key_spec_index: 0
   name: key
   type: key
 - arguments:
-  - name: start
+  - display_text: start
+    name: start
     type: integer
-  - name: end
+  - display_text: end
+    name: end
     type: integer
   multiple: true
   name: range
   type: block
 arity: -4
-bannerText: Array is a new data type that is currently in preview and may be subject to change.
+bannerText: Array is a new data type that is currently in preview and may be subject
+  to change.
 categories:
 - docs
 - develop
@@ -28,7 +32,7 @@ categories:
 - kubernetes
 - clients
 command_flags:
-- WRITE
+- write
 complexity: Proportional to the number of existing elements / slices touched, not
   to the numeric span of the requested ranges
 description: Deletes elements in one or more ranges.
@@ -36,18 +40,20 @@ function: ardelrangeCommand
 group: array
 hidden: false
 key_specs:
-- begin_search:
-    index:
-      pos: 1
+- RW: true
+  begin_search:
+    spec:
+      index: 1
+    type: index
+  delete: true
   find_keys:
-    range:
+    spec:
+      keystep: 1
       lastkey: 0
       limit: 0
-      step: 1
-  flags:
-  - RW
-  - DELETE
+    type: range
 linkTitle: ARDELRANGE
+railroad_diagram: /images/railroad/ardelrange.svg
 reply_schema:
   description: Number of elements deleted.
   type: integer

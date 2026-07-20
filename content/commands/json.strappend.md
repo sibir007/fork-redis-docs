@@ -31,7 +31,7 @@ module: JSON
 railroad_diagram: /images/railroad/json.strappend.svg
 since: 1.0.0
 stack_path: docs/data-types/json
-summary: Appends a string to JSON strings at the paths matching a given path expression
+summary: Appends a string to a JSON string value at path
 syntax_fmt: JSON.STRAPPEND key [path] value
 title: JSON.STRAPPEND
 ---
