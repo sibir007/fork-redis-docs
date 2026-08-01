@@ -1,8 +1,7 @@
 ---
 linkTitle: Query
 title: Query
-aliases:
-- /integrate/redisvl/api/query
+url: '/develop/ai/redisvl/0.24.0/api/query/'
 ---
 
 

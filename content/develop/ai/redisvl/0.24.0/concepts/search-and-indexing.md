@@ -1,8 +1,7 @@
 ---
 linkTitle: Search & indexing
 title: Search & Indexing
-aliases:
-- /integrate/redisvl/concepts/search-and-indexing
+url: '/develop/ai/redisvl/0.24.0/concepts/search-and-indexing/'
 ---
 
 

@@ -1,8 +1,7 @@
 ---
 linkTitle: Vectorizers
 title: Vectorizers
-aliases:
-- /integrate/redisvl/api/vectorizer
+url: '/develop/ai/redisvl/0.24.0/api/vectorizer/'
 ---
 
 
