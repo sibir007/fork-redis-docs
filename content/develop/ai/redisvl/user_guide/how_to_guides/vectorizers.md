@@ -7,7 +7,7 @@ weight: 04
 ---
 
 
-This guide demonstrates how to create embeddings using RedisVL's built-in text vectorizers. RedisVL supports multiple embedding providers: OpenAI, HuggingFace, Ollama, Vertex AI, Cohere, Mistral AI, Amazon Bedrock, VoyageAI, and custom vectorizers.
+This guide demonstrates how to create embeddings using RedisVL's built-in text vectorizers. RedisVL supports multiple embedding providers: OpenAI, HuggingFace, Ollama, Google (Vertex AI and the Gemini Developer API), Cohere, Mistral AI, Amazon Bedrock, VoyageAI, and custom vectorizers.
 
 ## Prerequisites
 
@@ -235,6 +235,8 @@ Make sure the Ollama daemon is running with `ollama serve`. By default, the Olla
 
 
 ```python
+# NBVAL_SKIP
+# No Ollama server in CI, so this only burns time on connection retries.
 from redisvl.utils.vectorize import OllamaTextVectorizer
 
 ollama_model = os.environ.get("OLLAMA_MODEL", "nomic-embed-text")
@@ -253,6 +255,8 @@ except (ImportError, ConnectionError, ValueError) as exc:
 
 
 ```python
+# NBVAL_SKIP
+# Depends on the Ollama cell above, which is not executed in CI.
 if ollama is not None:
     embeddings = ollama.embed_many(sentences, batch_size=2)
     print("Number of embeddings:", len(embeddings))
@@ -264,6 +268,8 @@ else:
 
 
 ```python
+# NBVAL_SKIP
+# Depends on the Ollama cell above, which is not executed in CI.
 if ollama is not None:
     embeddings = await ollama.aembed_many(sentences, batch_size=2)
     print("Number of async embeddings:", len(embeddings))
@@ -271,6 +277,8 @@ else:
     print("Skipping: run the Ollama cell above with a running Ollama server and pulled model.")
 
 ```
+
+**⚠️ Deprecated.** `VertexAIVectorizer` uses Google's Vertex AI model-garden SDK, which Google has deprecated with a scheduled removal. For text embeddings use the **Google Gen AI** vectorizer shown in the next section (`GoogleGenAIVectorizer`) on the supported `google-genai` SDK. Multimodal (image/video) migration is tracked in [issue #620](https://github.com/redis/redis-vl-python/issues/620).
 
 ### VertexAI
 
@@ -307,6 +315,58 @@ vtx = VertexAIVectorizer(api_config={
 # embed a sentence
 test = vtx.embed("This is a test sentence.")
 test[:10]
+```
+
+### Google Gen AI
+
+The `GoogleGenAIVectorizer` uses Google's [`google-genai`](https://pypi.org/project/google-genai/) SDK — the supported replacement for the deprecated Vertex AI model-garden SDK. It reaches **both** Google embedding backends from a single client:
+
+- **Vertex AI / Gemini Enterprise** — GCP project auth (`project_id` + `location`, credentials via ADC).
+- **Gemini Developer API** — a single `api_key`.
+
+Install it with `pip install redisvl[google-genai]`.
+
+**Migrating from `VertexAIVectorizer`:**
+
+| | `VertexAIVectorizer` (deprecated) | `GoogleGenAIVectorizer` |
+|---|---|---|
+| SDK | `google-cloud-aiplatform` (deprecated) | `google-genai` (supported) |
+| Default model | `textembedding-gecko` (768 dims) | `gemini-embedding-001` (3072 dims) |
+| Backends | Vertex AI only | Vertex AI **and** Gemini Developer API |
+| Async | no | yes (`aembed`, `aembed_many`) |
+
+Because the default model and dimensions differ, embeddings are **not** interchangeable — reindex when you switch. When you request a reduced `output_dimensionality`, the vectorizer L2-normalizes the result so it stays valid for Redis COSINE / inner-product search.
+
+**Set one of the following:**
+
+```
+# Gemini Developer API
+GEMINI_API_KEY=<your gemini api key>
+
+# or Vertex AI
+GOOGLE_CLOUD_PROJECT=<your gcp project id>
+GOOGLE_CLOUD_LOCATION=<your gcp region>
+GOOGLE_APPLICATION_CREDENTIALS=<path to your gcp JSON creds>
+```
+
+
+
+```python
+# NBVAL_SKIP
+# Docs example; not executed in CI so notebook validation makes no API calls.
+from redisvl.utils.vectorize import GoogleGenAIVectorizer
+
+# Auto-detects the backend: GEMINI_API_KEY -> Gemini, else GCP project/location -> Vertex AI.
+# Guarded so this notebook still runs when Google credentials aren't configured.
+try:
+    genai_vectorizer = GoogleGenAIVectorizer(model="gemini-embedding-001")
+    print(f"backend={genai_vectorizer.backend}, dims={genai_vectorizer.dims}")
+    genai_test = genai_vectorizer.embed("This is a test sentence.")
+    print(genai_test[:10])
+except (ImportError, ValueError) as e:
+    print(f"Skipping GoogleGenAIVectorizer demo: {e}")
+    genai_vectorizer = None
+
 ```
 
 ### Cohere
