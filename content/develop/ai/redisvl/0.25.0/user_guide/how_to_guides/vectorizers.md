@@ -1,9 +1,8 @@
 ---
 linkTitle: Create embeddings with vectorizers
 title: Create Embeddings with Vectorizers
-aliases:
-- /integrate/redisvl/user_guide/how_to_guides/04_vectorizers
 weight: 04
+url: '/develop/ai/redisvl/0.25.0/user_guide/how_to_guides/vectorizers/'
 ---
 
 

@@ -1,10 +1,9 @@
 ---
 linkTitle: RedisVL API
 title: RedisVL API
-aliases:
-- /integrate/redisvl/api
 weight: 5
 hideListLinks: true
+url: '/develop/ai/redisvl/0.25.0/api/'
 ---
 
 

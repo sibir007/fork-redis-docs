@@ -1,8 +1,7 @@
 ---
 linkTitle: Utilities
 title: Utilities
-aliases:
-- /integrate/redisvl/concepts/utilities
+url: '/develop/ai/redisvl/0.25.0/concepts/utilities/'
 ---
 
 
