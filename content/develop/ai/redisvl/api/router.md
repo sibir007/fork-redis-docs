@@ -10,7 +10,7 @@ aliases:
 
 ## Semantic Router
 
-### `class SemanticRouter(name, routes, vectorizer=None, routing_config=None, redis_client=None, redis_url='redis://localhost:6379', overwrite=False, connection_kwargs={})`
+### `class SemanticRouter(name, routes, vectorizer=None, routing_config=None, redis_client=None, redis_url='redis://localhost:6379', overwrite=False, connection_kwargs=None, create_index=True)`
 
 Semantic Router for managing and querying route vectors.
 
@@ -26,10 +26,29 @@ Initialize the SemanticRouter.
   * **overwrite** (*bool* *,* *optional*) – Whether to overwrite existing index. Defaults to False.
   * **connection_kwargs** (*Dict* *[* *str* *,* *Any* *]*) – The connection arguments
     for the redis client. Defaults to empty {}.
+  * **create_index** (*bool* *,* *optional*) – Whether RedisVL creates and validates
+    the index. When False the constructor issues no index command at
+    all and writes nothing: the index must already exist, already
+    hold the reference vectors for `routes`, and already have its
+    stored config, since none of that is written or verified.
+    `routes` must match what is indexed, because each route’s
+    distance threshold is applied from this local list – and
+    [add_route](#add_route) rewrites the stored config from that same list,
+    so attaching with a partial set and then adding a route
+    truncates the config every other client reads. See
+    [`SemanticCache`]({{< relref "cache/#semanticcache" >}}) for a worked
+    example of the flag, and [Install RedisVL]({{< relref "../user_guide/installation" >}}) for the
+    ACL details. Defaults to True.
+* **Raises:**
+  **ValueError** – If both create_index is False and overwrite is True.
 
 #### `add_route(route)`
 
 Add a new route to the SemanticRouter.
+
+Note that this replaces the router’s stored config with this instance’s
+route list, so a router constructed with a subset of the indexed routes
+will drop the rest from the config that [from_existing](#from_existing) reads.
 
 Embeds the route’s references, writes them to the Redis index,
 appends the route to `self.routes`, and persists the updated router
@@ -61,7 +80,17 @@ Add a reference(s) to an existing route.
 
 #### `clear()`
 
-Flush all routes from the semantic router index.
+Delete every route reference, leaving the index in place.
+
+Clears by index membership. Available under `create_index=False`;
+dropping the index is [delete](#delete).
+
+{{< warning >}}
+The stored `route_config` is left as it was, here and on the
+default path. A separate process calling [from_existing](#from_existing)
+afterwards will report routes whose reference vectors are gone.
+[remove_route](#remove_route) keeps the two in step.
+{{< /warning >}}
 
 * **Return type:**
   None
@@ -70,10 +99,13 @@ Flush all routes from the semantic router index.
 
 Delete the semantic router index and its persisted route config.
 
+* **Raises:**
+  **ValueError** – If `create_index=False`. Use [clear](#clear) to
+      remove the route references and leave the index standing.
 * **Return type:**
   None
 
-#### `delete_route_references(route_name='', reference_ids=[], keys=[])`
+#### `delete_route_references(route_name='', reference_ids=None, keys=None)`
 
 Get references for an existing semantic router route.
 
@@ -82,12 +114,34 @@ Get references for an existing semantic router route.
   * **Optional** – The reference or list of references to delete.
   * **Optional** – List of fully qualified keys (prefix:router:reference_id) to delete.
   * **route_name** (*str*)
-  * **reference_ids** (*list* *[* *str* *]*)
-  * **keys** (*list* *[* *str* *]*)
+  * **reference_ids** (*list* *[* *str* *]*  *|* *None*)
+  * **keys** (*list* *[* *str* *]*  *|* *None*)
 * **Returns:**
   Number of objects deleted
 * **Return type:**
   int
+* **Raises:**
+  * **ValueError** – If no references match the given route/ids/keys.
+  * [**PartialDeletionError**]({{< relref "exceptions/#partialdeletionerror" >}}) – If some keys could not be unlinked. Raised only
+        after the surviving references have been reconciled and persisted,
+        so a retry picks up exactly what is left.
+
+{{< note >}}
+Deleting every reference of a route removes the route itself, matching
+[remove_route](#remove_route). A route with no references cannot match anything,
+and [Route](#route) rejects an empty
+reference list, so persisting one would produce a config that
+[from_existing](#from_existing) can no longer load.
+{{< /note >}}
+
+{{< note >}}
+On Redis Cluster keys are unlinked one at a time and a per-key failure
+is logged rather than raised. References whose key failed to unlink are
+deliberately *kept* in the persisted route config: the hash is still in
+the index and the router would keep matching it, so dropping it from
+the config would leave the router claiming a reference is gone while
+still routing to it.
+{{< /note >}}
 
 #### `classmethod from_dict(data, **kwargs)`
 
@@ -115,6 +169,12 @@ router = SemanticRouter.from_dict(router_data)
 #### `classmethod from_existing(name, redis_client=None, redis_url='redis://localhost:6379', **kwargs)`
 
 Return SemanticRouter instance from existing index.
+
+Reads the stored route config with `JSON.GET`, so unlike
+`SearchIndex.from_existing()` this needs no `FT.INFO`. Pass
+`create_index=False` to keep it that way through construction, which
+makes this the way to attach to a router with a credential that cannot
+run index-metadata commands.
 
 * **Parameters:**
   * **name** (*str*)
@@ -153,7 +213,7 @@ Get a route by its name.
 * **Return type:**
   Optional[[Route](#route)]
 
-#### `get_route_references(route_name='', reference_ids=[], keys=[])`
+#### `get_route_references(route_name='', reference_ids=None, keys=None)`
 
 Get references for an existing route route.
 
@@ -161,8 +221,8 @@ Get references for an existing route route.
   * **router_name** (*str*) – The name of the router.
   * **references** (*Union* *[* *str* *,* *List* *[* *str* *]* *]*) – The reference or list of references to add.
   * **route_name** (*str*)
-  * **reference_ids** (*list* *[* *str* *]*)
-  * **keys** (*list* *[* *str* *]*)
+  * **reference_ids** (*list* *[* *str* *]*  *|* *None*)
+  * **keys** (*list* *[* *str* *]*  *|* *None*)
 * **Returns:**
   Reference objects stored
 * **Return type:**
@@ -184,8 +244,19 @@ It takes context as an argument since that’s what pydantic-core passes when ca
 
 Remove a route and all references from the semantic router.
 
+Like [add_route](#add_route), this replaces the router’s stored config with
+this instance’s route list, so removing one route from a router holding
+only a subset drops the rest from the config [from_existing](#from_existing)
+reads.
+
 * **Parameters:**
   **route_name** (*str*) – Name of the route to remove.
+* **Raises:**
+  [**PartialDeletionError**]({{< relref "exceptions/#partialdeletionerror" >}}) – If some of the route’s reference keys could not
+      be unlinked. The route is then kept with exactly those references
+      and the config persisted before raising, so the router keeps
+      describing what the index can still match and a retry removes the
+      remainder.
 * **Return type:**
   None
 
@@ -339,7 +410,7 @@ self is explicitly positional-only to allow self as a field name.
 
 #### `distance_threshold: Annotated[float, FieldInfo(annotation=NoneType, required=True, metadata=[Strict(strict=True), Gt(gt=0), Le(le=2)])]`
 
-Distance threshold for matching the route.
+Maximum distance for matching the route, inclusive.
 
 #### `metadata: dict[str, Any]`
 
