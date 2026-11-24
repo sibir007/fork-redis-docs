@@ -10,7 +10,7 @@ aliases:
 
 <a id="semantic-message-history-api"></a>
 
-### `class SemanticMessageHistory(name, session_tag=None, prefix=None, vectorizer=None, distance_threshold=0.3, redis_client=None, redis_url='redis://localhost:6379', connection_kwargs={}, overwrite=False, **kwargs)`
+### `class SemanticMessageHistory(name, session_tag=None, prefix=None, vectorizer=None, distance_threshold=0.3, redis_client=None, redis_url='redis://localhost:6379', connection_kwargs=None, overwrite=False, create_index=True, **kwargs)`
 
 Bases: `BaseMessageHistory`
 
@@ -37,6 +37,16 @@ responses.
     for the redis client. Defaults to empty {}.
   * **overwrite** (*bool*) – Whether or not to force overwrite the schema for
     the semantic message index. Defaults to false.
+  * **create_index** (*bool*) – Whether RedisVL creates and validates the index.
+    When False the constructor issues no index command at all: the
+    index must already exist with a compatible schema, and a live
+    index whose prefix or storage type differs is not detected –
+    which produces empty results rather than an error. See
+    [`SemanticCache`]({{< relref "cache/#semanticcache" >}}) for a worked
+    example, and [Install RedisVL]({{< relref "../user_guide/installation" >}}) for the ACL details.
+    Defaults to True.
+* **Raises:**
+  **ValueError** – If both create_index is False and overwrite is True.
 
 The proposed schema will support a single vector embedding constructed
 from either the prompt or response in a single string.
@@ -69,7 +79,17 @@ in sequential ordering after retrieval.
 
 #### `clear()`
 
-Clears the message history.
+Delete every message, leaving the index in place.
+
+Clears by index membership, so it removes the documents the live index
+covers. Available under `create_index=False`; dropping the index is
+[delete](#delete).
+
+{{< warning >}}
+Under `create_index=False` the live index is unverified, so if its
+prefix differs from this instance’s it removes documents this
+instance never wrote. See [Install RedisVL]({{< relref "../user_guide/installation" >}}).
+{{< /warning >}}
 
 * **Return type:**
   None
@@ -84,8 +104,11 @@ Count the number of messages in the conversation history.
 
 #### `delete()`
 
-Clear all message keys and remove the search index.
+Remove every message and drop the search index.
 
+* **Raises:**
+  **ValueError** – If `create_index=False`. Use [clear](#clear) to
+      remove the messages and leave the index standing.
 * **Return type:**
   None
 
@@ -174,13 +197,16 @@ in sequential ordering after retrieval.
 
 #### `property messages: list[str] | list[dict[str, str]]`
 
-Returns the full message history.
+Returns every message in the current session, oldest first.
+
+The result is not bounded. For a bounded read of the latest messages,
+use `get_recent(top_k=...)`.
 
 ## MessageHistory
 
 <a id="message-history-api"></a>
 
-### `class MessageHistory(name, session_tag=None, prefix=None, redis_client=None, redis_url='redis://localhost:6379', connection_kwargs={}, **kwargs)`
+### `class MessageHistory(name, session_tag=None, prefix=None, redis_client=None, redis_url='redis://localhost:6379', connection_kwargs=None, create_index=True, **kwargs)`
 
 Bases: `BaseMessageHistory`
 
@@ -202,6 +228,55 @@ responses.
   * **redis_url** (*str* *,* *optional*) – The redis url. Defaults to redis://localhost:6379.
   * **connection_kwargs** (*Dict* *[* *str* *,* *Any* *]*) – The connection arguments
     for the redis client. Defaults to empty {}.
+  * **create_index** (*bool*) – Whether RedisVL creates the index. When False
+    the constructor issues no index command at all: the index must
+    already exist over this name and prefix. This class never
+    validates an existing index’s schema, so nothing further is
+    verified either way – and as elsewhere, a live index whose
+    prefix or storage type differs from this one is not detected and
+    produces empty results rather than an error. See
+    [`SemanticCache`]({{< relref "cache/#semanticcache" >}}) for a worked
+    example, and [Install RedisVL]({{< relref "../user_guide/installation" >}}) for the ACL details.
+    Defaults to True.
+
+#### `async aadd_message(message, session_tag=None)`
+
+Async version of [add_message](#add_message).
+
+See [aget_recent](#aget_recent) for the connection caveats.
+
+* **Parameters:**
+  * **message** (*dict* *[* *str* *,* *str* *]*)
+  * **session_tag** (*str* *|* *None*)
+* **Return type:**
+  None
+
+#### `async aadd_messages(messages, session_tag=None)`
+
+Async version of [add_messages](#add_messages).
+
+See [aget_recent](#aget_recent) for the connection caveats.
+
+* **Parameters:**
+  * **messages** (*list* *[* *dict* *[* *str* *,* *str* *]* *]*)
+  * **session_tag** (*str* *|* *None*)
+* **Return type:**
+  None
+
+#### `async aclear()`
+
+Async version of [clear](#clear).
+
+See [aget_recent](#aget_recent) for the connection caveats.
+
+* **Return type:**
+  None
+
+#### `async acount(session_tag=None)`
+
+Async version of [count](#count).
+
+See [aget_recent](#aget_recent) for the connection caveats.
 
 #### `add_message(message, session_tag=None)`
 
@@ -229,9 +304,70 @@ in sequential ordering after retrieval.
 * **Return type:**
   None
 
+#### `async adisconnect()`
+
+Close the async Redis connection opened by the async methods.
+
+* **Return type:**
+  None
+
+#### `async adrop(id=None)`
+
+Async version of [drop](#drop).
+
+See [aget_recent](#aget_recent) for the connection caveats.
+
+* **Parameters:**
+  **id** (*str* *|* *None*)
+* **Return type:**
+  None
+
+#### `async aget_recent(top_k=5, as_text=False, raw=False, session_tag=None, role=None)`
+
+Async version of [get_recent](#get_recent): the same query on an
+[`AsyncSearchIndex`]({{< relref "searchindex/#asyncsearchindex" >}}), without blocking the loop.
+
+Pass `redis_url` rather than a client to the history if you need the
+async methods over Sentinel or Redis Cluster: those clients cannot be
+converted to their async form. The async client is
+bound to the event loop that made the first call, so call
+[adisconnect](#adisconnect) before switching loops.
+
+* **Parameters:**
+  * **top_k** (*int*)
+  * **as_text** (*bool*)
+  * **raw** (*bool*)
+  * **session_tag** (*str* *|* *None*)
+  * **role** (*str* *|* *list* *[* *str* *]*  *|* *None*)
+* **Return type:**
+  list[str] | list[dict[str, str]]
+
+#### `async astore(prompt, response, session_tag=None)`
+
+Async version of [store](#store).
+
+See [aget_recent](#aget_recent) for the connection caveats.
+
+* **Parameters:**
+  * **prompt** (*str*)
+  * **response** (*str*)
+  * **session_tag** (*str* *|* *None*)
+* **Return type:**
+  None
+
 #### `clear()`
 
-Clears the conversation message history.
+Delete every message, leaving the index in place.
+
+Clears by index membership, so it removes the documents the live index
+covers. Available under `create_index=False`; dropping the index is
+[delete](#delete).
+
+{{< warning >}}
+Under `create_index=False` the live index is unverified, so if its
+prefix differs from this instance’s it removes documents this
+instance never wrote. See [Install RedisVL]({{< relref "../user_guide/installation" >}}).
+{{< /warning >}}
 
 * **Return type:**
   None
@@ -246,8 +382,11 @@ Count the number of messages in the conversation history.
 
 #### `delete()`
 
-Clear all conversation keys and remove the search index.
+Remove every message and drop the search index.
 
+* **Raises:**
+  **ValueError** – If `create_index=False`. Use [clear](#clear) to
+      remove the messages and leave the index standing.
 * **Return type:**
   None
 
@@ -299,6 +438,19 @@ in sequential ordering after retrieval.
 * **Return type:**
   None
 
+#### `property aindex: `[`AsyncSearchIndex`]({{< relref "searchindex/#asyncsearchindex" >}})`  | None`
+
+The AsyncSearchIndex used by the async methods, once created.
+
+* **Returns:**
+  The async search index, or None before the first
+  async call.
+* **Return type:**
+  [AsyncSearchIndex]({{< relref "searchindex/#asyncsearchindex" >}})
+
 #### `property messages: list[str] | list[dict[str, str]]`
 
-Returns the full message history.
+Returns every message in the current session, oldest first.
+
+The result is not bounded. For a bounded read of the latest messages,
+use `get_recent(top_k=...)`.
